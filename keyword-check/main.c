@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// List of 32 C keywords
 const char *keywords[] = {
     "auto","break","case","char","const","continue","default","do",
     "double","else","enum","extern","float","for","goto","if",
@@ -9,48 +8,40 @@ const char *keywords[] = {
     "struct","switch","typedef","union","unsigned","void","volatile","while"
 };
 
-// Check if a word is a keyword
 int is_keyword(const char *word) {
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++)
         if (strcmp(word, keywords[i]) == 0)
             return 1;
-    }
     return 0;
 }
 
-// Check if the keyword was already written to output file
-int is_already_written(FILE *out, const char *word) {
+int is_written(FILE *file, const char *word) {
     char temp[50];
-    rewind(out); // Go to start of file
-    while (fscanf(out, "%s", temp) != EOF) {
+    rewind(file);
+    while (fscanf(file, "%s", temp) != EOF)
         if (strcmp(temp, word) == 0)
             return 1;
-    }
     return 0;
 }
 
 int main() {
     FILE *in = fopen("input.c", "r");
-    FILE *out = fopen("output.c", "w+"); // open for read/write
-
-    char word[50];
+    FILE *out = fopen("output.c", "w+");
 
     if (!in || !out) {
-        printf("Error opening files.\n");
+        printf("Error opening file.\n");
         return 1;
     }
 
-    fprintf(out, "// Unique keywords found:\n");
+    char word[50];
+    fprintf(out, "// Unique keywords:\n");
 
-    while (fscanf(in, "%s", word) != EOF) {
-        if (is_keyword(word) && !is_already_written(out, word)) {
+    while (fscanf(in, "%s", word) != EOF)
+        if (is_keyword(word) && !is_written(out, word))
             fprintf(out, "%s\n", word);
-        }
-    }
-
-    printf("Done! Check output.c\n");
 
     fclose(in);
     fclose(out);
+    printf("Done! Check output.c\n");
     return 0;
 }
